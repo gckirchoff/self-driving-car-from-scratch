@@ -1,5 +1,5 @@
 class Car {
-  constructor({ x, y, width, height }) {
+  constructor({ x, y, width, height, playerCar = false, maxSpeed = 3 }) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -8,13 +8,15 @@ class Car {
     this.angle = 0;
     this.speed = 0;
     this.acceleration = 0.2;
-    this.maxSpeed = 3;
+    this.maxSpeed = maxSpeed;
     this.friction = 0.05;
     this.collided = false;
 
     this.polygon = [];
-    this.sensor = new Sensor(this);
-    this.controls = new Controls();
+    if (playerCar) {
+      this.sensor = new Sensor(this);
+    }
+    this.controls = new Controls(playerCar);
   }
 
   draw(ctx) {
@@ -29,7 +31,7 @@ class Car {
       ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
     }
     ctx.fill();
-    this.sensor.draw(ctx);
+    this.sensor && this.sensor.draw(ctx);
 
     // ctx.save();
     // ctx.translate(this.x, this.y);
@@ -46,7 +48,7 @@ class Car {
       this.polygon = this.#createPolygon();
       this.collided = this.#didCollide(roadBorders);
     }
-    this.sensor.update(roadBorders);
+    this.sensor && this.sensor.update(roadBorders);
   }
 
   #move() {
