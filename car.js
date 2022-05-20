@@ -41,9 +41,11 @@ class Car {
   }
 
   update(roadBorders) {
-    this.#move();
-    this.polygon = this.#createPolygon();
-    this.collided = this.#didCollide(roadBorders);
+    if (!this.collided) {
+      this.#move();
+      this.polygon = this.#createPolygon();
+      this.collided = this.#didCollide(roadBorders);
+    }
     this.sensor.update(roadBorders);
   }
 
