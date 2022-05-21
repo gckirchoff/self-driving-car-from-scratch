@@ -16,6 +16,7 @@ class NeuralNetwork {
     for (let i = 1; i < network.levels.length; i++) {
       outputs = Level.feedForward(outputs, network.levels[i]);
     }
+    return outputs;
   }
 }
 
