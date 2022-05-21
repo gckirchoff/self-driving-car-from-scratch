@@ -19,11 +19,11 @@ class Car {
     this.controls = new Controls(playerCar);
   }
 
-  draw(ctx) {
+  draw(ctx, color) {
     if (this.collided) {
       ctx.fillStyle = 'grey';
     } else {
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = color;
     }
     ctx.beginPath();
     ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
@@ -42,13 +42,13 @@ class Car {
     // ctx.restore();
   }
 
-  update(roadBorders) {
+  update(roadBorders, traffic) {
     if (!this.collided) {
       this.#move();
       this.polygon = this.#createPolygon();
-      this.collided = this.#didCollide(roadBorders);
+      this.collided = this.#didCollide(roadBorders, traffic);
     }
-    this.sensor && this.sensor.update(roadBorders);
+    this.sensor && this.sensor.update(roadBorders, traffic);
   }
 
   #move() {
@@ -113,9 +113,14 @@ class Car {
     return points;
   }
 
-  #didCollide(roadBorders) {
+  #didCollide(roadBorders, traffic) {
     for (let i = 0; i < roadBorders.length; i++) {
       if (polygonIntersection(this.polygon, roadBorders[i])) {
+        return true;
+      }
+    }
+    for (let i = 0; i < traffic.length; i++) {
+      if (polygonIntersection(this.polygon, traffic[i].polygon)) {
         return true;
       }
     }

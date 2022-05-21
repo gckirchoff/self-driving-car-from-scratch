@@ -9,11 +9,11 @@ class Sensor {
     this.readings = [];
   }
 
-  update(roadBorders) {
+  update(roadBorders, traffic) {
     this.#castRays();
     this.readings = [];
     for (let i = 0; i < this.rayCount; i++) {
-      this.readings.push(this.#getReading(this.rays[i], roadBorders));
+      this.readings.push(this.#getReading(this.rays[i], roadBorders, traffic));
     }
   }
 
@@ -57,7 +57,7 @@ class Sensor {
     }
   }
 
-  #getReading(ray, roadBorders) {
+  #getReading(ray, roadBorders, traffic) {
     let intercepts = [];
     for (let i = 0; i < roadBorders.length; i++) {
       const intercept = getIntersection(
@@ -69,6 +69,20 @@ class Sensor {
 
       if (intercept) {
         intercepts.push(intercept);
+      }
+    }
+    for (let i = 0; i < traffic.length; i++) {
+      const trafficPoly = traffic[i].polygon;
+      for (let j = 0; j < trafficPoly.length; j++) {
+        const intercept = getIntersection(
+          ray[0],
+          ray[1],
+          trafficPoly[j],
+          trafficPoly[(j + 1) % trafficPoly.length]
+        );
+        if (intercept) {
+          intercepts.push(intercept);
+        }
       }
     }
 
