@@ -18,6 +18,25 @@ class NeuralNetwork {
     }
     return outputs;
   }
+
+  static Mutate(network, amount = 1) {
+    network.levels.forEach((level) => {
+      // Randomize biases by going towards random val between -1 and 1 by amount
+      for (let i = 0; i < level.biases.length; i++) {
+        level.biases[i] = lerp(level.biases[i], genAbsOneVal(), amount);
+      }
+
+      for (let i = 0; i < level.weights.length; i++) {
+        for (let j = 0; j < level.weights[i].length; j++) {
+          level.weights[i][j] = lerp(
+            level.weights[i][j],
+            genAbsOneVal(),
+            amount
+          );
+        }
+      }
+    });
+  }
 }
 
 class Level {
