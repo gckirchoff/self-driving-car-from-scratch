@@ -17,7 +17,7 @@ class Car {
     this.useBrain = controlType === 'ai';
 
     this.polygon = [];
-    if (controlType === 'player') {
+    if (controlType === 'player' || controlType === 'ai') {
       this.sensor = new Sensor(this);
       this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
     }

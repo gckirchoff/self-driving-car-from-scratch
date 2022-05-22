@@ -1,4 +1,4 @@
-const canvas = document.getElementById('myCanvas');
+const canvas = document.getElementById('carCanvas');
 canvas.width = 200;
 
 const ctx = canvas.getContext('2d');
@@ -8,7 +8,7 @@ const car = new Car({
   y: 100,
   width: 30,
   height: 50,
-  controlType: 'player',
+  controlType: 'ai',
 });
 const traffic = [
   new Car({
