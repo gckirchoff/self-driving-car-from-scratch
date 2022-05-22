@@ -82,3 +82,11 @@ function toUTF16(codePoint) {
 
   return u(leadSurrogate) + u(tailSurrogate);
 }
+
+function saveBestBrain() {
+  localStorage.setItem('bestBrain', JSON.stringify(bestCar.brain));
+}
+
+function discardBestBrain() {
+  localStorage.removeItem('bestBrain');
+}

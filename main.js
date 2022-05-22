@@ -11,6 +11,12 @@ const numAiCars = 100;
 
 const road = new Road({ x: carCanvas.width / 2, width: carCanvas.width * 0.9 });
 const cars = generateAiCars(numAiCars);
+
+let bestCar = cars[0];
+if (localStorage.getItem('bestBrain')) {
+  bestCar.brain = JSON.parse(localStorage.getItem('bestBrain'));
+}
+
 const traffic = [
   new Car({
     x: road.getLaneCenter(1),
@@ -20,8 +26,22 @@ const traffic = [
     maxSpeed: 2,
   }),
   new Car({
+    x: road.getLaneCenter(0),
+    y: -300,
+    width: 30,
+    height: 50,
+    maxSpeed: 2,
+  }),
+  new Car({
     x: road.getLaneCenter(2),
-    y: -200,
+    y: -300,
+    width: 30,
+    height: 50,
+    maxSpeed: 2,
+  }),
+  new Car({
+    x: road.getLaneCenter(1),
+    y: -500,
     width: 30,
     height: 50,
     maxSpeed: 2,
