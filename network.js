@@ -19,7 +19,7 @@ class NeuralNetwork {
     return outputs;
   }
 
-  static Mutate(network, amount = 1) {
+  static mutate(network, amount = 1) {
     network.levels.forEach((level) => {
       // Randomize biases by going towards random val between -1 and 1 by amount
       for (let i = 0; i < level.biases.length; i++) {
