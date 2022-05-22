@@ -24,7 +24,7 @@ class Car {
     this.controls = new Controls(controlType);
   }
 
-  draw(ctx, color) {
+  draw(ctx, color, drawSensor = false) {
     if (this.collided) {
       ctx.fillStyle = 'grey';
     } else {
@@ -36,7 +36,9 @@ class Car {
       ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
     }
     ctx.fill();
-    this.sensor && this.sensor.draw(ctx);
+    if (this.sensor && drawSensor) {
+      this.sensor.draw(ctx);
+    }
 
     // ctx.save();
     // ctx.translate(this.x, this.y);

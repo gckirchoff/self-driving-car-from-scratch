@@ -46,22 +46,39 @@ function getRGBA(value) {
   return `rgba(${R},${G},${B},${alpha})`;
 }
 
+function generateAiCars(n) {
+  const cars = [];
+  const start = n <= 1 ? 0 : 1;
+  for (let i = start; i < n; i++) {
+    cars.push(
+      new Car({
+        x: road.getLaneCenter(1),
+        y: 100,
+        width: 30,
+        height: 50,
+        controlType: 'ai',
+      })
+    );
+  }
+  return cars;
+}
+
 function toUTF16(codePoint) {
   var TEN_BITS = parseInt('1111111111', 2);
   function u(codeUnit) {
-      return '\\u'+codeUnit.toString(16).toUpperCase();
+    return '\\u' + codeUnit.toString(16).toUpperCase();
   }
 
-  if (codePoint <= 0xFFFF) {
-      return u(codePoint);
+  if (codePoint <= 0xffff) {
+    return u(codePoint);
   }
   codePoint -= 0x10000;
 
   // Shift right to get to most significant 10 bits
-  var leadSurrogate = 0xD800 + (codePoint >> 10);
+  var leadSurrogate = 0xd800 + (codePoint >> 10);
 
   // Mask to get least significant 10 bits
-  var tailSurrogate = 0xDC00 + (codePoint & TEN_BITS);
+  var tailSurrogate = 0xdc00 + (codePoint & TEN_BITS);
 
   return u(leadSurrogate) + u(tailSurrogate);
 }
