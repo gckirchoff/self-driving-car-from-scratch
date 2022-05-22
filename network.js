@@ -35,23 +35,30 @@ class Level {
   }
 
   static #randomize(level) {
-    level.inputs.forEach((input, inputIndex) => {
-      level.outputs.forEach((output, outputIndex) => {
+    for (let inputIndex = 0; inputIndex < level.inputs.length; inputIndex++) {
+      for (
+        let outputIndex = 0;
+        outputIndex < level.outputs.length;
+        outputIndex++
+      ) {
         level.weights[inputIndex][outputIndex] = genAbsOneVal();
-      });
-    });
+      }
+    }
 
-    level.biases.forEach((bias, biasIndex) => {
+    for (let biasIndex = 0; biasIndex < level.biases.length; biasIndex++) {
       level.biases[biasIndex] = genAbsOneVal();
-    });
+    }
   }
 
   static feedForward(givenInputs, level) {
-    level.inputs.forEach((input, inputIndex) => {
-      level.inputs[inputIndex] = givenInputs[inputIndex];
-    });
-
-    level.outputs.forEach((output, outputIndex) => {
+    for (let i = 0; i < level.inputs.length; i++) {
+      level.inputs[i] = givenInputs[i];
+    }
+    for (
+      let outputIndex = 0;
+      outputIndex < level.outputs.length;
+      outputIndex++
+    ) {
       const sum = level.inputs.reduce((acc, input, inputIndex) => {
         acc +=
           level.inputs[inputIndex] * level.weights[inputIndex][outputIndex];
@@ -59,14 +66,13 @@ class Level {
       }, 0);
 
       //   In the future might want if (sum+level.biases[outputIndex] > 0)
-      if (sum <= level.biases[outputIndex]) {
+      if (sum > level.biases[outputIndex]) {
         //   And this to be level.outputs[outputIndex] = relu(sum + level.biases[outputIndex])
+        level.outputs[outputIndex] = 1;
+      } else {
         level.outputs[outputIndex] = 0;
-        return;
       }
-      level.outputs[outputIndex] = 1;
-    });
-
+    }
     return level.outputs;
   }
 }

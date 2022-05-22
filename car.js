@@ -15,6 +15,7 @@ class Car {
     this.polygon = [];
     if (playerCar) {
       this.sensor = new Sensor(this);
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
     }
     this.controls = new Controls(playerCar);
   }
@@ -48,7 +49,14 @@ class Car {
       this.polygon = this.#createPolygon();
       this.collided = this.#didCollide(roadBorders, traffic);
     }
-    this.sensor && this.sensor.update(roadBorders, traffic);
+    if (this.sensor) {
+      this.sensor.update(roadBorders, traffic);
+      const offsets = this.sensor.readings.map((reading) => {
+        if (reading === null) return 0;
+        return 1 - reading.offset;
+      });
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+    }
   }
 
   #move() {
