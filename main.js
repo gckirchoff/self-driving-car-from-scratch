@@ -8,7 +8,7 @@ const car = new Car({
   y: 100,
   width: 30,
   height: 50,
-  playerCar: true,
+  controlType: 'player',
 });
 const traffic = [
   new Car({

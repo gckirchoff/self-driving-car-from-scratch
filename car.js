@@ -1,9 +1,11 @@
 class Car {
-  constructor({ x, y, width, height, playerCar = false, maxSpeed = 3 }) {
+  constructor({ x, y, width, height, controlType = 'npc', maxSpeed = 3 }) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+
+    // controlTypeEnum = { "npc", "ai", "player" }
 
     this.angle = 0;
     this.speed = 0;
@@ -13,11 +15,11 @@ class Car {
     this.collided = false;
 
     this.polygon = [];
-    if (playerCar) {
+    if (controlType === 'player') {
       this.sensor = new Sensor(this);
       this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
     }
-    this.controls = new Controls(playerCar);
+    this.controls = new Controls(controlType);
   }
 
   draw(ctx, color) {
