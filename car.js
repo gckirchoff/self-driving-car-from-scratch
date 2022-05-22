@@ -14,6 +14,8 @@ class Car {
     this.friction = 0.05;
     this.collided = false;
 
+    this.useBrain = controlType === 'ai';
+
     this.polygon = [];
     if (controlType === 'player') {
       this.sensor = new Sensor(this);
@@ -58,6 +60,13 @@ class Car {
         return 1 - reading.offset;
       });
       const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+
+      if (this.useBrain) {
+        this.controls.forward = outputs[0];
+        this.controls.left = outputs[1];
+        this.controls.right = outputs[2];
+        this.controls.reverse = outputs[3];
+      }
     }
   }
 
