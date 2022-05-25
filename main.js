@@ -11,10 +11,23 @@ const numAiCars = 100;
 
 const road = new Road({ x: carCanvas.width / 2, width: carCanvas.width * 0.9 });
 const cars = generateAiCars(numAiCars);
-
 let bestCar = cars[0];
 if (localStorage.getItem('bestBrain')) {
-  bestCar.brain = JSON.parse(localStorage.getItem('bestBrain'));
+  for (let i = 0; i < cars.length; i++) {
+    cars[i].brain = JSON.parse(localStorage.getItem('bestBrain'));
+
+    if (i !== 0) {
+      NeuralNetwork.mutate(cars[i].brain, .075)
+    }
+  }
+}
+
+function saveBestBrain() {
+  localStorage.setItem('bestBrain', JSON.stringify(bestCar.brain));
+}
+
+function discardBestBrain() {
+  localStorage.removeItem('bestBrain');
 }
 
 const traffic = [
@@ -46,6 +59,27 @@ const traffic = [
     height: 50,
     maxSpeed: 2,
   }),
+  new Car({
+    x: road.getLaneCenter(2),
+    y: -500,
+    width: 30,
+    height: 50,
+    maxSpeed: 2,
+  }),
+  new Car({
+    x: road.getLaneCenter(0),
+    y: -700,
+    width: 30,
+    height: 50,
+    maxSpeed: 2,
+  }),
+  new Car({
+    x: road.getLaneCenter(1),
+    y: -700,
+    width: 30,
+    height: 50,
+    maxSpeed: 2,
+  }),
 ];
 
 animate();
@@ -61,7 +95,7 @@ function animate(time) {
   networkCanvas.height = window.innerHeight;
 
   const allYValues = cars.map(({ y }) => y);
-  const bestCar = cars.find((car) => car.y === Math.min(...allYValues));
+  bestCar = cars.find((car) => car.y === Math.min(...allYValues));
 
   carCtx.save();
   carCtx.translate(0, -bestCar.y + carCanvas.height * 0.7);
