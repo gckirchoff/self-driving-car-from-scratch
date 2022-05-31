@@ -12,12 +12,15 @@ const numAiCars = 100;
 const road = new Road({ x: carCanvas.width / 2, width: carCanvas.width * 0.9 });
 const cars = generateAiCars(numAiCars);
 let bestCar = cars[0];
+let furthestCar = cars[0];
+let prevFurthestDistance = -Infinity;
+
 if (localStorage.getItem('bestBrain')) {
   for (let i = 0; i < cars.length; i++) {
     cars[i].brain = JSON.parse(localStorage.getItem('bestBrain'));
 
     if (i !== 0) {
-      NeuralNetwork.mutate(cars[i].brain, .075)
+      NeuralNetwork.mutate(cars[i].brain, 0.1);
     }
   }
 }
@@ -28,6 +31,10 @@ function saveBestBrain() {
 
 function discardBestBrain() {
   localStorage.removeItem('bestBrain');
+}
+
+function saveFurthestBrain() {
+  localStorage.setItem('bestBrain', JSON.stringify(furthestCar.brain));
 }
 
 const traffic = [
@@ -82,7 +89,18 @@ const traffic = [
   }),
 ];
 
+const npcStartingDistances = traffic.map(({ y }) => y);
+const furthestNpcDistance = Math.min(...npcStartingDistances);
+const furthestNpcCar = traffic.find((car) => car.y === furthestNpcDistance);
+
 animate();
+
+const MINUTE = 60000;
+
+setTimeout(() => {
+  saveFurthestBrain();
+  document.location.reload();
+}, 0.75 * MINUTE);
 
 function animate(time) {
   for (let i = 0; i < traffic.length; i++) {
@@ -95,7 +113,20 @@ function animate(time) {
   networkCanvas.height = window.innerHeight;
 
   const allYValues = cars.map(({ y }) => y);
-  bestCar = cars.find((car) => car.y === Math.min(...allYValues));
+  const furthestYValue = Math.min(...allYValues);
+  bestCar = cars.find((car) => car.y === furthestYValue);
+
+  const distancesInFrontOfFurthestNpc = allYValues.map(
+    (y) => furthestNpcCar.y - y
+  );
+  const mostSuccessfulDistance = Math.max(...distancesInFrontOfFurthestNpc);
+  candidateFurthestCar = cars.find(
+    (car) => furthestNpcCar.y - car.y === mostSuccessfulDistance
+  );
+  if (mostSuccessfulDistance > prevFurthestDistance) {
+    furthestCar = candidateFurthestCar;
+    prevFurthestDistance = mostSuccessfulDistance;
+  }
 
   carCtx.save();
   carCtx.translate(0, -bestCar.y + carCanvas.height * 0.7);
