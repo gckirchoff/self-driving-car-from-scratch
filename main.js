@@ -7,6 +7,11 @@ networkCanvas.width = 300;
 const carCtx = carCanvas.getContext('2d');
 const networkCtx = networkCanvas.getContext('2d');
 
+const timeUntilEpochEndsSpan = document.getElementById(
+  'timeUntilEpochFinishes'
+);
+const furthestDistanceSpan = document.getElementById('furthestDistance');
+
 const numAiCars = 100;
 
 const road = new Road({ x: carCanvas.width / 2, width: carCanvas.width * 0.9 });
@@ -14,6 +19,8 @@ const cars = generateAiCars(numAiCars);
 let bestCar = cars[0];
 let furthestCar = cars[0];
 let prevFurthestDistance = -Infinity;
+let initialDistanceFromFurthestNpc = -Infinity;
+let setInitialDistanceFromFurthestNpc = false;
 
 if (localStorage.getItem('bestBrain')) {
   for (let i = 0; i < cars.length; i++) {
@@ -93,16 +100,24 @@ const npcStartingDistances = traffic.map(({ y }) => y);
 const furthestNpcDistance = Math.min(...npcStartingDistances);
 const furthestNpcCar = traffic.find((car) => car.y === furthestNpcDistance);
 
-animate();
-
 const MINUTE = 60000;
+const epochDuration = 0.75 * MINUTE;
+const endOfEpochTime = Date.now() + epochDuration;
+
+animate();
 
 setTimeout(() => {
   saveFurthestBrain();
   document.location.reload();
-}, 0.75 * MINUTE);
+}, epochDuration);
 
 function animate(time) {
+  const secondsUntilEndOfEpoch = (
+    ((endOfEpochTime - Date.now()) % MINUTE) /
+    1000
+  ).toFixed(0);
+  timeUntilEpochEndsSpan.textContent = secondsUntilEndOfEpoch;
+
   for (let i = 0; i < traffic.length; i++) {
     traffic[i].update(road.borders, []);
   }
@@ -120,12 +135,19 @@ function animate(time) {
     (y) => furthestNpcCar.y - y
   );
   const mostSuccessfulDistance = Math.max(...distancesInFrontOfFurthestNpc);
+  if (!setInitialDistanceFromFurthestNpc) {
+    setInitialDistanceFromFurthestNpc = true;
+    initialDistanceFromFurthestNpc = mostSuccessfulDistance;
+  }
   candidateFurthestCar = cars.find(
     (car) => furthestNpcCar.y - car.y === mostSuccessfulDistance
   );
   if (mostSuccessfulDistance > prevFurthestDistance) {
     furthestCar = candidateFurthestCar;
     prevFurthestDistance = mostSuccessfulDistance;
+    furthestDistanceSpan.textContent = Math.floor(
+      mostSuccessfulDistance - initialDistanceFromFurthestNpc
+    );
   }
 
   carCtx.save();
